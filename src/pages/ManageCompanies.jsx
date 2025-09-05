@@ -35,15 +35,16 @@ const ManageCompanies = () => {
   
   const navigate = useNavigate();
 
-  // Mock data for companies
+  // Fetch companies data
   useEffect(() => {
     const fetchCompanies = async () => {
-      setLoading(true);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockCompanies = [
+      try {
+        setLoading(true);
+        
+        // Simulate API call - In production, replace with actual API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const mockCompanies = [
         {
           id: 1,
           companyName: 'TechCorp Solutions',
@@ -133,10 +134,15 @@ const ManageCompanies = () => {
       
       setCompanies(mockCompanies);
       setFilteredCompanies(mockCompanies);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+      // You can add error handling UI here if needed
+    } finally {
       setLoading(false);
-    };
+    }
+  };
 
-    fetchCompanies();
+  fetchCompanies();
   }, []);
 
   // Filter companies based on search and filters
@@ -265,6 +271,29 @@ const ManageCompanies = () => {
       <AdminLayout>
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
+          <span className="ml-4 text-gray-600">Loading companies...</span>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (filteredCompanies.length === 0) {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center h-64">
+          <FaBuilding className="text-gray-400 text-5xl mb-4" />
+          <h3 className="text-xl font-medium text-gray-600">No Companies Found</h3>
+          <p className="text-gray-500 mt-2">Try adjusting your search or filters</p>
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              setStatusFilter('all');
+              setPlanFilter('all');
+            }}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            Clear Filters
+          </button>
         </div>
       </AdminLayout>
     );
@@ -275,91 +304,176 @@ const ManageCompanies = () => {
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           {/* Header */}
-          <div className="md:flex md:items-center md:justify-between mb-8">
-            <div className="flex-1 min-w-0">
-              <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-                Manage Companies
-              </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Manage all registered companies and their subscriptions
-              </p>
+          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <div className="md:flex md:items-center md:justify-between">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center">
+                  <div className="bg-blue-50 rounded-lg p-3 mr-4">
+                    <FaBuilding className="text-blue-600 text-xl" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
+                      Manage Companies
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Manage all registered companies and their subscriptions
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+                <button
+                  onClick={exportCompanies}
+                  className="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <FaDownload className="mr-2" />
+                  Export Data
+                </button>
+                <button
+                  onClick={() => navigate(ROUTES.ADMIN_ADD_COMPANY)}
+                  className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-sm font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <FaPlus className="mr-2" />
+                  Add Company
+                </button>
+              </div>
             </div>
-            <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
-              <button
-                onClick={exportCompanies}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              >
-                <FaDownload className="mr-2" />
-                Export
-              </button>
-              <button
-                onClick={() => navigate(ROUTES.ADMIN_ADD_COMPANY)}
-                className="inline-flex items-center px-4 py-2 bg-sky-600 text-white rounded-lg text-sm font-medium hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              >
-                <FaPlus className="mr-2" />
-                Add Company
-              </button>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4">
+                <div className="flex items-center">
+                  <div className="bg-white p-2 rounded-lg shadow-sm">
+                    <FaBuilding className="text-blue-600 text-xl" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-blue-600 font-medium">Total Companies</p>
+                    <p className="text-2xl font-bold text-blue-900">{companies.length}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4">
+                <div className="flex items-center">
+                  <div className="bg-white p-2 rounded-lg shadow-sm">
+                    <FaCheckCircle className="text-green-600 text-xl" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-green-600 font-medium">Active Companies</p>
+                    <p className="text-2xl font-bold text-green-900">
+                      {companies.filter(c => c.status === 'active').length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-4">
+                <div className="flex items-center">
+                  <div className="bg-white p-2 rounded-lg shadow-sm">
+                    <FaCalendarAlt className="text-yellow-600 text-xl" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-600 font-medium">Pending</p>
+                    <p className="text-2xl font-bold text-yellow-900">
+                      {companies.filter(c => c.status === 'pending').length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4">
+                <div className="flex items-center">
+                  <div className="bg-white p-2 rounded-lg shadow-sm">
+                    <FaCreditCard className="text-purple-600 text-xl" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-purple-600 font-medium">Total Revenue</p>
+                    <p className="text-2xl font-bold text-purple-900">
+                      ₹{companies.reduce((sum, company) => sum + company.totalRevenue, 0).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-white shadow rounded-lg mb-6">
-            <div className="px-6 py-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="relative">
-                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <div className="bg-white shadow-sm rounded-2xl mb-6">
+            <div className="p-6">
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaSearch className="text-gray-400" />
+                  </div>
                   <input
                     type="text"
                     placeholder="Search companies..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    className="block w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
 
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="suspended">Suspended</option>
-                  <option value="pending">Pending</option>
-                </select>
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="appearance-none bg-white pl-4 pr-10 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-400 transition-colors duration-200"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="suspended">Suspended</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
 
-                <select
-                  value={planFilter}
-                  onChange={(e) => setPlanFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                >
-                  <option value="all">All Plans</option>
-                  <option value="basic">Basic</option>
-                  <option value="professional">Professional</option>
-                  <option value="enterprise">Enterprise</option>
-                </select>
+                  <div className="relative">
+                    <select
+                      value={planFilter}
+                      onChange={(e) => setPlanFilter(e.target.value)}
+                      className="appearance-none bg-white pl-4 pr-10 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-gray-400 transition-colors duration-200"
+                    >
+                      <option value="all">All Plans</option>
+                      <option value="basic">Basic Plan</option>
+                      <option value="professional">Professional Plan</option>
+                      <option value="enterprise">Enterprise Plan</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
 
-                <div className="flex items-center text-sm text-gray-500">
-                  <FaFilter className="mr-2" />
-                  {filteredCompanies.length} of {companies.length} companies
+                  <div className="flex items-center px-4 py-2 bg-gray-50 rounded-xl">
+                    <FaFilter className="text-gray-400 mr-2" />
+                    <span className="text-sm text-gray-600 font-medium">
+                      {filteredCompanies.length} of {companies.length}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Companies Table */}
-          <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="bg-white shadow-sm rounded-2xl overflow-hidden border border-gray-100">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <input
-                        type="checkbox"
-                        checked={selectedCompanies.length === currentCompanies.length && currentCompanies.length > 0}
-                        onChange={handleSelectAll}
-                        className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
-                      />
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedCompanies.length === currentCompanies.length && currentCompanies.length > 0}
+                          onChange={handleSelectAll}
+                          className="rounded-md border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 cursor-pointer"
+                        />
+                      </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Company

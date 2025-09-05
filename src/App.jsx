@@ -11,6 +11,7 @@ import AdminDashboard from './components/dashboard/AdminDashboard';
 import CompanyDashboard from './components/dashboard/CompanyDashboard';
 import UserDashboard from './components/dashboard/UserDashboard';
 import AddCompany from './pages/AddCompany';
+import ManageCompanies from './pages/ManageCompanies';
 
 function App() {
   return (
@@ -40,6 +41,14 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="ROLE_ADMIN">
                   <AddCompany />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/companies" 
+              element={
+                <ProtectedRoute requiredRole="ROLE_ADMIN">
+                  <ManageCompanies />
                 </ProtectedRoute>
               } 
             />
