@@ -64,7 +64,7 @@ const AddCompany = () => {
     { id: 1, title: 'Company Details', icon: FaBuilding },
     { id: 2, title: 'Contact Information', icon: FaUser },
     { id: 3, title: 'Business Information', icon: MdBusiness },
-    { id: 4, title: 'Payment Plan', icon: FaCreditCard },
+    { id: 4, title: 'Payment Information', icon: FaCreditCard },
     { id: 5, title: 'Review & Submit', icon: FaCheck }
   ];
 
@@ -712,67 +712,118 @@ const AddCompany = () => {
 
   return (
     <AdminLayout>
-      <div className="py-6">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
-          {/* Progress Steps */}
+      <div className="max-w-5xl mx-auto">
+        <div className="pb-6">
+          {/* Page Title */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
+            <h1 className="text-xl font-semibold text-gray-900">Add New Company</h1>
+            <p className="text-sm text-gray-600 mt-1">Register a new company to the ProctorAI platform</p>
+          </div>
+
+          {/* Progress Steps */}
+          <div className="relative mb-8">
+            <div className="flex items-center justify-between relative">
+              <div className="absolute top-6 left-0 right-0 h-1 bg-gray-100 rounded-full" />
+              <div 
+                className="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-in-out" 
+                style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }} 
+              />
               {steps.map((step, index) => {
                 const Icon = step.icon;
                 const isActive = currentStep === step.id;
                 const isCompleted = currentStep > step.id;
                 
                 return (
-                  <div key={step.id} className="flex items-center">
-                    <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                      isCompleted 
-                        ? 'bg-sky-600 border-sky-600 text-white'
-                        : isActive 
-                        ? 'border-sky-600 text-sky-600'
-                        : 'border-gray-300 text-gray-400'
-                    }`}>
-                      {isCompleted ? (
-                        <FaCheck />
-                      ) : (
-                        <Icon />
-                      )}
+                  <div key={step.id} className="flex items-center relative z-10">
+                    <div className={`flex flex-col items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}>
+                      <div 
+                        className={`
+                          flex items-center justify-center w-12 h-12 rounded-full 
+                          transition-all duration-300 transform
+                          ${isActive ? 'scale-110 shadow-lg' : ''}
+                          ${isCompleted 
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200'
+                            : isActive 
+                            ? 'bg-white border-2 border-blue-500 text-blue-600 shadow-blue-100'
+                            : 'bg-white border-2 border-gray-200 text-gray-400'
+                          }
+                        `}
+                      >
+                        {isCompleted ? (
+                          <FaCheck className="text-lg animate-scale" />
+                        ) : (
+                          <Icon className={`text-lg ${isActive ? 'animate-bounce-subtle' : ''}`} />
+                        )}
+                      </div>
+                      <div className="mt-3 relative">
+                        <p className={`text-sm font-medium transition-all duration-200
+                          ${isActive 
+                            ? 'text-blue-600 transform scale-105' 
+                            : isCompleted 
+                            ? 'text-blue-500'
+                            : 'text-gray-500'
+                          }
+                        `}>
+                          {step.title}
+                        </p>
+                        {isActive && (
+                          <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500 rounded-full animate-expand" />
+                        )}
+                      </div>
                     </div>
-                    <div className="ml-3 hidden sm:block">
-                      <p className={`text-sm font-medium ${
-                        isActive ? 'text-sky-600' : isCompleted ? 'text-sky-600' : 'text-gray-500'
-                      }`}>
-                        {step.title}
-                      </p>
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className={`ml-6 w-12 h-0.5 ${
-                        isCompleted ? 'bg-sky-600' : 'bg-gray-300'
-                      }`} />
-                    )}
                   </div>
                 );
               })}
             </div>
           </div>
 
+          <style jsx>{`
+            @keyframes scale {
+              0% { transform: scale(0.8); }
+              50% { transform: scale(1.2); }
+              100% { transform: scale(1); }
+            }
+            @keyframes bounce-subtle {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-2px); }
+            }
+            @keyframes expand {
+              0% { transform: scaleX(0); }
+              100% { transform: scaleX(1); }
+            }
+            .animate-scale {
+              animation: scale 0.3s ease-out;
+            }
+            .animate-bounce-subtle {
+              animation: bounce-subtle 2s infinite ease-in-out;
+            }
+            .animate-expand {
+              animation: expand 0.3s ease-out forwards;
+              transform-origin: left;
+            }
+          `}</style>
+
           {/* Form Content */}
           <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-8">
+            <div className="px-6 py-6">
               {renderStepContent()}
             </div>
 
             {/* Navigation Buttons */}
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-between">
+            <div className="px-8 py-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between items-center">
               <button
                 type="button"
                 onClick={handlePrevious}
                 disabled={currentStep === 1}
-                className={`px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium ${
+                className={`px-6 py-2.5 border border-gray-300 rounded-xl text-sm font-medium transition-all duration-200 flex items-center ${
                   currentStep === 1
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'text-gray-400 cursor-not-allowed bg-gray-50'
+                    : 'text-gray-700 hover:bg-gray-100 hover:border-gray-400 hover:shadow-sm'
                 }`}
               >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
                 Previous
               </button>
 
@@ -780,24 +831,35 @@ const AddCompany = () => {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="px-6 py-2 bg-sky-600 text-white rounded-lg text-sm font-medium hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-xl text-sm font-medium hover:from-sky-600 hover:to-sky-700 transition-all duration-200 shadow-sm hover:shadow flex items-center"
                 >
                   Next
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  className="px-6 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-sm font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 >
                   {loading ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                       Processing...
                     </>
                   ) : (
-                    'Submit & Process Payment'
+                    <>
+                      Submit & Process Payment
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </>
                   )}
                 </button>
               )}

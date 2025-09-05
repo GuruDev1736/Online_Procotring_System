@@ -10,6 +10,7 @@ import Unauthorized from './pages/Unauthorized';
 import AdminDashboard from './components/dashboard/AdminDashboard';
 import CompanyDashboard from './components/dashboard/CompanyDashboard';
 import UserDashboard from './components/dashboard/UserDashboard';
+import AddCompany from './pages/AddCompany';
 
 function App() {
   return (
@@ -31,6 +32,14 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="ROLE_ADMIN">
                   <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/add-company" 
+              element={
+                <ProtectedRoute requiredRole="ROLE_ADMIN">
+                  <AddCompany />
                 </ProtectedRoute>
               } 
             />

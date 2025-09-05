@@ -39,12 +39,6 @@ const AdminLayout = ({ children }) => {
       href: ROUTES.ADMIN_MANAGE_COMPANIES,
       icon: FaUsers,
       current: location.pathname === ROUTES.ADMIN_MANAGE_COMPANIES
-    },
-    {
-      name: 'Payment Details',
-      href: ROUTES.ADMIN_PAYMENT_DETAILS,
-      icon: FaCreditCard,
-      current: location.pathname === ROUTES.ADMIN_PAYMENT_DETAILS
     }
   ];
 
@@ -55,65 +49,75 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Three.js Background */}
-      <div className="fixed inset-0 opacity-20">
-        <ThreeBackground />
-      </div>
-
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
-        <div className="flex items-center justify-center h-16 px-4 bg-gradient-to-r from-sky-600 to-sky-700">
-          <div className="flex items-center">
-            <FaShieldAlt className="text-white text-2xl mr-2" />
-            <span className="text-white text-xl font-bold">ProctorAI Admin</span>
-          </div>
+      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
+        {/* Header */}
+        <div className="flex items-center h-16 px-6 bg-blue-600">
+          <Link to={ROUTES.ADMIN_DASHBOARD} className="flex items-center">
+            <FaShieldAlt className="text-white text-2xl" />
+            <span className="text-white text-lg font-semibold ml-3">ProctorAI Admin</span>
+          </Link>
         </div>
 
-        <nav className="mt-8">
-          <div className="px-4 space-y-2">
+        {/* Navigation */}
+        <nav className="px-3 py-4">
+          <div className="space-y-2">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                  className={`flex items-center px-3 py-3 rounded-xl transition-all duration-200 group ${
                     item.current
-                      ? 'bg-sky-100 text-sky-700 border-r-4 border-sky-600'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-sky-600'
+                      ? 'bg-blue-50'
+                      : 'hover:bg-gray-50'
                   }`}
-                  onClick={() => setIsSidebarOpen(false)}
                 >
-                  <Icon className={`mr-3 text-lg ${
-                    item.current ? 'text-sky-600' : 'text-gray-400 group-hover:text-sky-500'
-                  }`} />
-                  {item.name}
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-lg mr-4 transition-all duration-200 ${
+                    item.current
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+                      : 'bg-gray-100 text-gray-500 group-hover:text-gray-700 group-hover:bg-gray-200'
+                  }`}>
+                    <Icon className={`text-xl transition-transform duration-200 ${
+                      item.current ? 'transform scale-110' : ''
+                    }`} />
+                  </div>
+                  <span className={`text-sm font-medium ${
+                    item.current
+                      ? 'text-blue-600'
+                      : 'text-gray-600 group-hover:text-gray-900'
+                  }`}>
+                    {item.name}
+                  </span>
                 </Link>
               );
             })}
           </div>
         </nav>
 
-        {/* User Info */}
-        <div className="absolute bottom-0 w-full p-4 border-t border-gray-200 bg-white">
-          <div className="flex items-center">
+        {/* User Profile */}
+        <div className="absolute bottom-0 w-full border-t border-gray-100">
+          <div className="p-4 mx-3 my-2 flex items-center rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
             <img
-              className="h-10 w-10 rounded-full"
+              className="h-10 w-10 rounded-lg object-cover"
               src={user?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'}
               alt={user?.name}
             />
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-              <p className="text-xs text-gray-500">{user?.role}</p>
+            <div className="ml-3 flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 truncate">
+                {user?.name || 'Admin User'}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                {user?.role || 'Administrator'}
+              </p>
             </div>
             <button
               onClick={handleLogout}
-              className="ml-2 p-2 text-gray-400 hover:text-red-600 transition-colors"
+              className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
               title="Logout"
             >
-              <FaSignOutAlt />
+              <FaSignOutAlt className="text-lg" />
             </button>
           </div>
         </div>
@@ -128,37 +132,26 @@ const AdminLayout = ({ children }) => {
       )}
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="pl-64">
         {/* Top navigation */}
-        <div className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
-          <div className="relative flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6 lg:px-0">
-            <button
-              type="button"
-              className="lg:hidden p-2 text-gray-500 hover:text-gray-600"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <FaBars className="h-6 w-6" />
-            </button>
-
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-200">
+          <div className="flex h-16 items-center justify-between px-6">
             <div className="flex items-center">
-              <h1 className="text-lg font-semibold text-gray-900">
-                Admin Dashboard
+              <h1 className="text-lg font-medium text-gray-900">
+                {location.pathname === ROUTES.ADMIN_DASHBOARD ? 'Admin Dashboard' : ''}
               </h1>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <FaUserCircle className="text-gray-400" />
-                <span className="hidden sm:block text-sm text-gray-700">
-                  Welcome, {user?.name}
-                </span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                Welcome, <span className="text-gray-900">{user?.name || 'Admin User'}</span>
+              </span>
             </div>
           </div>
         </div>
 
         {/* Page content */}
-        <main className="relative">
+        <main className="p-6">
           {children}
         </main>
       </div>
