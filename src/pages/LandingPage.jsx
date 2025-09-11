@@ -26,11 +26,6 @@ const LandingPage = () => {
 
   const features = [
     {
-      icon: <FaRobot className="text-4xl text-sky-600" />,
-      title: "AI Interview",
-      description: "Advanced AI-powered interview system with real-time analysis and feedback"
-    },
-    {
       icon: <MdAssignment className="text-4xl text-sky-600" />,
       title: "Aptitude Test",
       description: "Comprehensive aptitude testing with intelligent question generation"
@@ -44,6 +39,11 @@ const LandingPage = () => {
       icon: <FaCalendarAlt className="text-4xl text-sky-600" />,
       title: "Interview Scheduling",
       description: "Smart scheduling system with automated reminders and calendar integration"
+    },
+    {
+      icon: <FaRobot className="text-4xl text-sky-600" />,
+      title: "AI Interview",
+      description: "Advanced AI-powered interview system with real-time analysis and feedback"
     }
   ];
 

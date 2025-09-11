@@ -1,3 +1,8 @@
+/*
+// Payment details and management system functionality - Commented out as requested
+// This included payment tracking, invoice generation, status management, etc.
+*/
+
 import React, { useState, useEffect } from 'react';
 import { 
   FaCreditCard,

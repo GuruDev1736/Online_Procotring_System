@@ -3,9 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   FaShieldAlt, 
   FaTachometerAlt, 
-  FaBuilding, 
-  FaUsers, 
-  FaCreditCard,
   FaBars,
   FaTimes,
   FaSignOutAlt,
@@ -13,7 +10,6 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { ROUTES } from '../../constants';
-import ThreeBackground from '../common/ThreeBackground';
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,18 +23,6 @@ const AdminLayout = ({ children }) => {
       href: ROUTES.ADMIN_DASHBOARD,
       icon: FaTachometerAlt,
       current: location.pathname === ROUTES.ADMIN_DASHBOARD
-    },
-    {
-      name: 'Add Company',
-      href: ROUTES.ADMIN_ADD_COMPANY,
-      icon: FaBuilding,
-      current: location.pathname === ROUTES.ADMIN_ADD_COMPANY
-    },
-    {
-      name: 'Manage Companies',
-      href: ROUTES.ADMIN_MANAGE_COMPANIES,
-      icon: FaUsers,
-      current: location.pathname === ROUTES.ADMIN_MANAGE_COMPANIES
     }
   ];
 

@@ -7,11 +7,8 @@ import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import ForgotPasswordFlow from './components/auth/ForgotPasswordFlow';
 import Unauthorized from './pages/Unauthorized';
-import AdminDashboard from './components/dashboard/AdminDashboard';
-import CompanyDashboard from './components/dashboard/CompanyDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './components/dashboard/UserDashboard';
-import AddCompany from './pages/AddCompany';
-import ManageCompanies from './pages/ManageCompanies';
 
 function App() {
   return (
@@ -33,32 +30,6 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="ROLE_ADMIN">
                   <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/add-company" 
-              element={
-                <ProtectedRoute requiredRole="ROLE_ADMIN">
-                  <AddCompany />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin/companies" 
-              element={
-                <ProtectedRoute requiredRole="ROLE_ADMIN">
-                  <ManageCompanies />
-                </ProtectedRoute>
-              } 
-            />
-
-            {/* Protected Routes - Company */}
-            <Route 
-              path="/company/dashboard" 
-              element={
-                <ProtectedRoute requiredRole="ROLE_COMPANY">
-                  <CompanyDashboard />
                 </ProtectedRoute>
               } 
             />

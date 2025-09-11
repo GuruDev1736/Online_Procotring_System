@@ -1,3 +1,8 @@
+/*
+// Company management system functionality - Commented out as requested
+// This included complex company listing, filtering, status management, payment tracking, etc.
+*/
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 

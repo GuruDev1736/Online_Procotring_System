@@ -24,17 +24,8 @@ export const AuthProvider = ({ children }) => {
       name: 'Admin User',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
     },
-    company: {
-      id: 2,
-      email: 'company@example.com',
-      password: 'company123',
-      role: 'ROLE_COMPANY',
-      name: 'Tech Solutions Ltd',
-      companyId: 'COMP001',
-      avatar: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=150&h=150&fit=crop'
-    },
     user: {
-      id: 3,
+      id: 2,
       email: 'user@example.com',
       password: 'user123',
       role: 'ROLE_USER',
@@ -77,9 +68,6 @@ export const AuthProvider = ({ children }) => {
         case 'ROLE_ADMIN':
           redirectPath = '/admin/dashboard';
           break;
-        case 'ROLE_COMPANY':
-          redirectPath = '/company/dashboard';
-          break;
         case 'ROLE_USER':
           redirectPath = '/user/dashboard';
           break;
@@ -105,7 +93,6 @@ export const AuthProvider = ({ children }) => {
     // Define role permissions
     const rolePermissions = {
       'ROLE_ADMIN': ['all'],
-      'ROLE_COMPANY': ['manage_exams', 'view_reports', 'manage_users'],
       'ROLE_USER': ['take_exam', 'view_results']
     };
     const userPermissions = rolePermissions[user.role] || [];
@@ -125,7 +112,6 @@ export const AuthProvider = ({ children }) => {
     isRole,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'ROLE_ADMIN',
-    isCompany: user?.role === 'ROLE_COMPANY',
     isUser: user?.role === 'ROLE_USER'
   };
 
