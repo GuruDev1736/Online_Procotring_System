@@ -1,59 +1,60 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  FaBuilding, 
-  FaEnvelope, 
-  FaLock, 
-  FaPhone, 
-  FaEye, 
-  FaEyeSlash, 
-  FaCalendarAlt, 
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { signUpCompany } from "../service/authService";
+import {
+  FaBuilding,
+  FaEnvelope,
+  FaLock,
+  FaPhone,
+  FaEye,
+  FaEyeSlash,
+  FaCalendarAlt,
   FaMapMarkerAlt,
   FaGlobe,
   FaUser,
   FaIdCard,
   FaCheck,
   FaChevronLeft,
-  FaChevronRight
-} from 'react-icons/fa';
-import { MdSecurity, MdBusiness, MdVerifiedUser } from 'react-icons/md';
-import ThreeBackground from '../common/ThreeBackground';
+  FaChevronRight,
+} from "react-icons/fa";
+import { MdSecurity, MdBusiness, MdVerifiedUser } from "react-icons/md";
+import ThreeBackground from "../common/ThreeBackground";
 
 const CompanyRegistration = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     // Step 1: Basic Organization Info
-    organizationName: '',
-    organizationType: '',
-    establishmentDate: '',
-    industrySector: '',
-    websiteUrl: '',
-    
+    organizationName: "",
+    organizationType: "",
+    establishmentDate: "",
+    industrySector: "",
+    websiteUrl: "",
+
     // Step 2: Contact & Location
     registeredAddress: {
-      street: '',
-      city: '',
-      state: '',
-      zip: '',
-      country: ''
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      country: "",
     },
-    officialEmailDomain: '',
-    primaryContactEmail: '',
-    officialPhone: '',
-    
+    officialEmailDomain: "",
+    primaryContactEmail: "",
+    officialPhone: "",
+
     // Step 3: Authorized Representative
     representative: {
-      fullName: '',
-      designation: '',
-      officialEmail: '',
-      password: '',
-      confirmPassword: '',
-      contactNumber: '',
-      idProof: null
+      fullName: "",
+      designation: "",
+      officialEmail: "",
+      password: "",
+      confirmPassword: "",
+      contactNumber: "",
+      idProof: null,
     },
-    
+
     // Step 4: Review & Verification
-    confirmationAccepted: false
+    confirmationAccepted: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -63,18 +64,39 @@ const CompanyRegistration = () => {
   const [emailVerified, setEmailVerified] = useState(false);
 
   const organizationTypes = [
-    'University', 'College', 'Corporate', 'Training Institute', 
-    'Government Body', 'NGO', 'Research Institution', 'Healthcare', 'Other'
+    "University",
+    "College",
+    "Corporate",
+    "Training Institute",
+    "Government Body",
+    "NGO",
+    "Research Institution",
+    "Healthcare",
+    "Other",
   ];
 
   const industrySectors = [
-    'Education', 'Information Technology', 'Healthcare', 'Finance', 
-    'Manufacturing', 'Government', 'Non-Profit', 'Research & Development', 'Other'
+    "Education",
+    "Information Technology",
+    "Healthcare",
+    "Finance",
+    "Manufacturing",
+    "Government",
+    "Non-Profit",
+    "Research & Development",
+    "Other",
   ];
 
   const designations = [
-    'Exam Head', 'HR Manager', 'Training Head', 'Director', 
-    'CEO', 'Academic Dean', 'Principal', 'Vice President', 'Other'
+    "Exam Head",
+    "HR Manager",
+    "Training Head",
+    "Director",
+    "CEO",
+    "Academic Dean",
+    "Principal",
+    "Vice President",
+    "Other",
   ];
 
   const validateEmail = (email) => {
@@ -83,12 +105,14 @@ const CompanyRegistration = () => {
   };
 
   const validatePassword = (password) => {
-    return password.length >= 8 && /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password);
+    return (
+      password.length >= 8 && /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)
+    );
   };
 
   const validatePhone = (phone) => {
     const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
+    return phoneRegex.test(phone.replace(/\s/g, ""));
   };
 
   const validateWebsite = (url) => {
@@ -102,9 +126,12 @@ const CompanyRegistration = () => {
 
   const validateDomainMatch = (website, email) => {
     try {
-      const websiteDomain = new URL(website).hostname.replace('www.', '');
-      const emailDomain = email.split('@')[1];
-      return websiteDomain.includes(emailDomain) || emailDomain.includes(websiteDomain);
+      const websiteDomain = new URL(website).hostname.replace("www.", "");
+      const emailDomain = email.split("@")[1];
+      return (
+        websiteDomain.includes(emailDomain) ||
+        emailDomain.includes(websiteDomain)
+      );
     } catch {
       return false;
     }
@@ -112,38 +139,38 @@ const CompanyRegistration = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     // Handle nested objects
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".");
+      setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent],
-          [child]: type === 'checkbox' ? checked : value
-        }
+          [child]: type === "checkbox" ? checked : value,
+        },
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : value
+        [name]: type === "checkbox" ? checked : value,
       }));
     }
 
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const nextStep = () => {
     if (validateCurrentStep()) {
-      setCurrentStep(prev => Math.min(prev + 1, 4));
+      setCurrentStep((prev) => Math.min(prev + 1, 4));
     }
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
   const validateCurrentStep = () => {
@@ -151,68 +178,96 @@ const CompanyRegistration = () => {
 
     switch (currentStep) {
       case 1:
-        if (!formData.organizationName.trim()) newErrors.organizationName = 'Organization name is required';
-        if (!formData.organizationType) newErrors.organizationType = 'Organization type is required';
-        if (!formData.establishmentDate) newErrors.establishmentDate = 'Establishment date is required';
-        if (!formData.industrySector) newErrors.industrySector = 'Industry sector is required';
+        if (!formData.organizationName.trim())
+          newErrors.organizationName = "Organization name is required";
+        if (!formData.organizationType)
+          newErrors.organizationType = "Organization type is required";
+        if (!formData.establishmentDate)
+          newErrors.establishmentDate = "Establishment date is required";
+        if (!formData.industrySector)
+          newErrors.industrySector = "Industry sector is required";
         if (!formData.websiteUrl) {
-          newErrors.websiteUrl = 'Website URL is required';
+          newErrors.websiteUrl = "Website URL is required";
         } else if (!validateWebsite(formData.websiteUrl)) {
-          newErrors.websiteUrl = 'Please enter a valid website URL';
+          newErrors.websiteUrl = "Please enter a valid website URL";
         }
         break;
 
       case 2:
-        if (!formData.registeredAddress.street.trim()) newErrors['registeredAddress.street'] = 'Street address is required';
-        if (!formData.registeredAddress.city.trim()) newErrors['registeredAddress.city'] = 'City is required';
-        if (!formData.registeredAddress.state.trim()) newErrors['registeredAddress.state'] = 'State is required';
-        if (!formData.registeredAddress.zip.trim()) newErrors['registeredAddress.zip'] = 'ZIP code is required';
-        if (!formData.registeredAddress.country.trim()) newErrors['registeredAddress.country'] = 'Country is required';
+        if (!formData.registeredAddress.street.trim())
+          newErrors["registeredAddress.street"] = "Street address is required";
+        if (!formData.registeredAddress.city.trim())
+          newErrors["registeredAddress.city"] = "City is required";
+        if (!formData.registeredAddress.state.trim())
+          newErrors["registeredAddress.state"] = "State is required";
+        if (!formData.registeredAddress.zip.trim())
+          newErrors["registeredAddress.zip"] = "ZIP code is required";
+        if (!formData.registeredAddress.country.trim())
+          newErrors["registeredAddress.country"] = "Country is required";
         if (!formData.officialEmailDomain) {
-          newErrors.officialEmailDomain = 'Official email domain is required';
+          newErrors.officialEmailDomain = "Official email domain is required";
         } else if (!validateEmail(formData.officialEmailDomain)) {
-          newErrors.officialEmailDomain = 'Please enter a valid email address';
+          newErrors.officialEmailDomain = "Please enter a valid email address";
         }
         if (!formData.primaryContactEmail) {
-          newErrors.primaryContactEmail = 'Primary contact email is required';
+          newErrors.primaryContactEmail = "Primary contact email is required";
         } else if (!validateEmail(formData.primaryContactEmail)) {
-          newErrors.primaryContactEmail = 'Please enter a valid email address';
+          newErrors.primaryContactEmail = "Please enter a valid email address";
         }
         if (!formData.officialPhone) {
-          newErrors.officialPhone = 'Official phone number is required';
+          newErrors.officialPhone = "Official phone number is required";
         } else if (!validatePhone(formData.officialPhone)) {
-          newErrors.officialPhone = 'Please enter a valid phone number';
+          newErrors.officialPhone = "Please enter a valid phone number";
         }
         break;
 
       case 3:
-        if (!formData.representative.fullName.trim()) newErrors['representative.fullName'] = 'Full name is required';
-        if (!formData.representative.designation) newErrors['representative.designation'] = 'Designation is required';
+        if (!formData.representative.fullName.trim())
+          newErrors["representative.fullName"] = "Full name is required";
+        if (!formData.representative.designation)
+          newErrors["representative.designation"] = "Designation is required";
         if (!formData.representative.officialEmail) {
-          newErrors['representative.officialEmail'] = 'Official email is required';
+          newErrors["representative.officialEmail"] =
+            "Official email is required";
         } else if (!validateEmail(formData.representative.officialEmail)) {
-          newErrors['representative.officialEmail'] = 'Please enter a valid email address';
-        } else if (formData.websiteUrl && !validateDomainMatch(formData.websiteUrl, formData.representative.officialEmail)) {
-          newErrors['representative.officialEmail'] = 'Email domain should match organization domain';
+          newErrors["representative.officialEmail"] =
+            "Please enter a valid email address";
+        } else if (
+          formData.websiteUrl &&
+          !validateDomainMatch(
+            formData.websiteUrl,
+            formData.representative.officialEmail
+          )
+        ) {
+          newErrors["representative.officialEmail"] =
+            "Email domain should match organization domain";
         }
         if (!formData.representative.password) {
-          newErrors['representative.password'] = 'Password is required';
+          newErrors["representative.password"] = "Password is required";
         } else if (!validatePassword(formData.representative.password)) {
-          newErrors['representative.password'] = 'Password must be 8+ chars with uppercase, lowercase, and number';
+          newErrors["representative.password"] =
+            "Password must be 8+ chars with uppercase, lowercase, and number";
         }
-        if (formData.representative.password !== formData.representative.confirmPassword) {
-          newErrors['representative.confirmPassword'] = 'Passwords do not match';
+        if (
+          formData.representative.password !==
+          formData.representative.confirmPassword
+        ) {
+          newErrors["representative.confirmPassword"] =
+            "Passwords do not match";
         }
         if (!formData.representative.contactNumber) {
-          newErrors['representative.contactNumber'] = 'Contact number is required';
+          newErrors["representative.contactNumber"] =
+            "Contact number is required";
         } else if (!validatePhone(formData.representative.contactNumber)) {
-          newErrors['representative.contactNumber'] = 'Please enter a valid contact number';
+          newErrors["representative.contactNumber"] =
+            "Please enter a valid contact number";
         }
         break;
 
       case 4:
         if (!formData.confirmationAccepted) {
-          newErrors.confirmationAccepted = 'You must confirm that all information is true and valid';
+          newErrors.confirmationAccepted =
+            "You must confirm that all information is true and valid";
         }
         break;
     }
@@ -223,15 +278,47 @@ const CompanyRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (currentStep === 4 && validateCurrentStep()) {
       setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false);
-        alert('Company registration submitted successfully! You will receive a verification email shortly.');
-        console.log('Company Registration Data:', formData);
-      }, 2000);
+
+      const address =
+        formData.registeredAddress.street +
+        formData.registeredAddress.country +
+        formData.registeredAddress.state +
+        formData.registeredAddress.city;
+
+      const data = await signUpCompany(
+        formData.organizationName,
+        formData.organizationType,
+        formData.establishmentDate,
+        formData.industrySector,
+        formData.websiteUrl,
+        address,
+        "",
+        formData.officialEmailDomain,
+        formData.primaryContactEmail,
+        formData.officialPhone,
+        formData.representative.fullName,
+        formData.representative.designation,
+        formData.representative.contactNumber,
+        formData.representative.contactNumber,
+        formData.representative.officialEmail,
+        formData.representative.confirmPassword
+      );
+
+      try {
+        if (data.STS === "200") {
+          setIsLoading(false);
+          alert(
+            "Company registration submitted successfully! You will receive a verification email shortly."
+          );
+        } else {
+          setErrors(data.MSG || "Some thing went wrong");
+        }
+      } catch (error) {
+        setErrors({ general: error.message });
+      }
     }
   };
 
@@ -241,17 +328,22 @@ const CompanyRegistration = () => {
     setTimeout(() => {
       setIsLoading(false);
       setEmailVerified(true);
-      alert('Verification email sent successfully!');
+      alert("Verification email sent successfully!");
     }, 1500);
   };
 
   const getStepIcon = (step) => {
     switch (step) {
-      case 1: return <MdBusiness className="text-xl" />;
-      case 2: return <FaMapMarkerAlt className="text-xl" />;
-      case 3: return <MdVerifiedUser className="text-xl" />;
-      case 4: return <FaCheck className="text-xl" />;
-      default: return <FaCheck className="text-xl" />;
+      case 1:
+        return <MdBusiness className="text-xl" />;
+      case 2:
+        return <FaMapMarkerAlt className="text-xl" />;
+      case 3:
+        return <MdVerifiedUser className="text-xl" />;
+      case 4:
+        return <FaCheck className="text-xl" />;
+      default:
+        return <FaCheck className="text-xl" />;
     }
   };
 
@@ -259,7 +351,7 @@ const CompanyRegistration = () => {
     <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Three.js Background */}
       <ThreeBackground />
-      
+
       {/* Background Animation */}
       <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 2 }}>
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-r from-sky-300/20 to-sky-400/20 rounded-full animate-pulse"></div>
@@ -267,7 +359,10 @@ const CompanyRegistration = () => {
       </div>
 
       {/* Company Registration Card */}
-      <div className="relative bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-4xl border border-white/20" style={{ zIndex: 3 }}>
+      <div
+        className="relative bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-4xl border border-white/20"
+        style={{ zIndex: 3 }}
+      >
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -278,7 +373,9 @@ const CompanyRegistration = () => {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-500 to-sky-600 bg-clip-text text-transparent">
             Company Registration
           </h1>
-          <p className="text-gray-600 mt-2">Register your organization for online proctoring services</p>
+          <p className="text-gray-600 mt-2">
+            Register your organization for online proctoring services
+          </p>
         </div>
 
         {/* Progress Stepper */}
@@ -286,25 +383,31 @@ const CompanyRegistration = () => {
           <div className="flex items-center justify-between relative">
             {/* Progress Line */}
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2"></div>
-            <div 
+            <div
               className="absolute top-1/2 left-0 h-0.5 bg-gradient-to-r from-sky-500 to-sky-600 -translate-y-1/2 transition-all duration-500"
               style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
             ></div>
 
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="relative flex flex-col items-center">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                  currentStep >= step 
-                    ? 'bg-gradient-to-r from-sky-500 to-sky-600 border-sky-500 text-white' 
-                    : 'bg-white border-gray-300 text-gray-400'
-                }`}>
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                    currentStep >= step
+                      ? "bg-gradient-to-r from-sky-500 to-sky-600 border-sky-500 text-white"
+                      : "bg-white border-gray-300 text-gray-400"
+                  }`}
+                >
                   {getStepIcon(step)}
                 </div>
-                <div className={`mt-2 text-sm font-medium ${currentStep >= step ? 'text-sky-600' : 'text-gray-400'}`}>
-                  {step === 1 && 'Organization'}
-                  {step === 2 && 'Contact'}
-                  {step === 3 && 'Representative'}
-                  {step === 4 && 'Review'}
+                <div
+                  className={`mt-2 text-sm font-medium ${
+                    currentStep >= step ? "text-sky-600" : "text-gray-400"
+                  }`}
+                >
+                  {step === 1 && "Organization"}
+                  {step === 2 && "Contact"}
+                  {step === 3 && "Representative"}
+                  {step === 4 && "Review"}
                 </div>
               </div>
             ))}
@@ -317,16 +420,26 @@ const CompanyRegistration = () => {
           {currentStep === 1 && (
             <div className="space-y-6">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">Basic Organization Information</h2>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                  Basic Organization Information
+                </h2>
                 <p className="text-gray-600">Tell us about your organization</p>
               </div>
 
               {/* Organization Name */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Organization Name (Legal Name)</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Organization Name (Legal Name)
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <FaBuilding className={`text-lg ${errors.organizationName ? 'text-red-400' : 'text-gray-400'}`} />
+                    <FaBuilding
+                      className={`text-lg ${
+                        errors.organizationName
+                          ? "text-red-400"
+                          : "text-gray-400"
+                      }`}
+                    />
                   </div>
                   <input
                     type="text"
@@ -334,58 +447,78 @@ const CompanyRegistration = () => {
                     value={formData.organizationName}
                     onChange={handleChange}
                     className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                      errors.organizationName 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                      errors.organizationName
+                        ? "border-red-400 focus:border-red-500 bg-red-50"
+                        : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                     }`}
                     placeholder="Enter organization legal name"
                   />
                 </div>
-                {errors.organizationName && <p className="text-red-500 text-sm">{errors.organizationName}</p>}
+                {errors.organizationName && (
+                  <p className="text-red-500 text-sm">
+                    {errors.organizationName}
+                  </p>
+                )}
               </div>
 
               {/* Organization Type and Industry */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Organization Type */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Organization Type</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Organization Type
+                  </label>
                   <select
                     name="organizationType"
                     value={formData.organizationType}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                      errors.organizationType 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                      errors.organizationType
+                        ? "border-red-400 focus:border-red-500 bg-red-50"
+                        : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                     }`}
                   >
                     <option value="">Select organization type</option>
-                    {organizationTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
+                    {organizationTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
                     ))}
                   </select>
-                  {errors.organizationType && <p className="text-red-500 text-sm">{errors.organizationType}</p>}
+                  {errors.organizationType && (
+                    <p className="text-red-500 text-sm">
+                      {errors.organizationType}
+                    </p>
+                  )}
                 </div>
 
                 {/* Industry Sector */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Industry Sector</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Industry Sector
+                  </label>
                   <select
                     name="industrySector"
                     value={formData.industrySector}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                      errors.industrySector 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                      errors.industrySector
+                        ? "border-red-400 focus:border-red-500 bg-red-50"
+                        : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                     }`}
                   >
                     <option value="">Select industry sector</option>
-                    {industrySectors.map(sector => (
-                      <option key={sector} value={sector}>{sector}</option>
+                    {industrySectors.map((sector) => (
+                      <option key={sector} value={sector}>
+                        {sector}
+                      </option>
                     ))}
                   </select>
-                  {errors.industrySector && <p className="text-red-500 text-sm">{errors.industrySector}</p>}
+                  {errors.industrySector && (
+                    <p className="text-red-500 text-sm">
+                      {errors.industrySector}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -393,10 +526,18 @@ const CompanyRegistration = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Establishment Date */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Date of Establishment</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Date of Establishment
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaCalendarAlt className={`text-lg ${errors.establishmentDate ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaCalendarAlt
+                        className={`text-lg ${
+                          errors.establishmentDate
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
                       type="date"
@@ -404,21 +545,31 @@ const CompanyRegistration = () => {
                       value={formData.establishmentDate}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors.establishmentDate 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors.establishmentDate
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                     />
                   </div>
-                  {errors.establishmentDate && <p className="text-red-500 text-sm">{errors.establishmentDate}</p>}
+                  {errors.establishmentDate && (
+                    <p className="text-red-500 text-sm">
+                      {errors.establishmentDate}
+                    </p>
+                  )}
                 </div>
 
                 {/* Website URL */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Organization Website URL</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Organization Website URL
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaGlobe className={`text-lg ${errors.websiteUrl ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaGlobe
+                        className={`text-lg ${
+                          errors.websiteUrl ? "text-red-400" : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
                       type="url"
@@ -426,14 +577,16 @@ const CompanyRegistration = () => {
                       value={formData.websiteUrl}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors.websiteUrl 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors.websiteUrl
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="https://www.example.com"
                     />
                   </div>
-                  {errors.websiteUrl && <p className="text-red-500 text-sm">{errors.websiteUrl}</p>}
+                  {errors.websiteUrl && (
+                    <p className="text-red-500 text-sm">{errors.websiteUrl}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -443,20 +596,34 @@ const CompanyRegistration = () => {
           {currentStep === 2 && (
             <div className="space-y-6">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">Contact & Location Information</h2>
-                <p className="text-gray-600">Provide your official contact details</p>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                  Contact & Location Information
+                </h2>
+                <p className="text-gray-600">
+                  Provide your official contact details
+                </p>
               </div>
 
               {/* Registered Address */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-800">Registered Office Address</h3>
-                
+                <h3 className="text-lg font-medium text-gray-800">
+                  Registered Office Address
+                </h3>
+
                 {/* Street Address */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Street Address</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Street Address
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaMapMarkerAlt className={`text-lg ${errors['registeredAddress.street'] ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaMapMarkerAlt
+                        className={`text-lg ${
+                          errors["registeredAddress.street"]
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
                       type="text"
@@ -464,99 +631,179 @@ const CompanyRegistration = () => {
                       value={formData.registeredAddress.street}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['registeredAddress.street'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["registeredAddress.street"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="Enter street address"
                     />
                   </div>
-                  {errors['registeredAddress.street'] && <p className="text-red-500 text-sm">{errors['registeredAddress.street']}</p>}
+                  {errors["registeredAddress.street"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["registeredAddress.street"]}
+                    </p>
+                  )}
                 </div>
 
                 {/* City, State, ZIP */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">City</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      City
+                    </label>
                     <input
                       type="text"
                       name="registeredAddress.city"
                       value={formData.registeredAddress.city}
                       onChange={handleChange}
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['registeredAddress.city'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["registeredAddress.city"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="City"
                     />
-                    {errors['registeredAddress.city'] && <p className="text-red-500 text-sm">{errors['registeredAddress.city']}</p>}
+                    {errors["registeredAddress.city"] && (
+                      <p className="text-red-500 text-sm">
+                        {errors["registeredAddress.city"]}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">State</label>
-                    <input
-                      type="text"
+                    <label className="text-sm font-medium text-gray-700">
+                      State
+                    </label>
+                    <select
                       name="registeredAddress.state"
                       value={formData.registeredAddress.state}
                       onChange={handleChange}
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['registeredAddress.state'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["registeredAddress.state"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
-                      placeholder="State"
-                    />
-                    {errors['registeredAddress.state'] && <p className="text-red-500 text-sm">{errors['registeredAddress.state']}</p>}
+                    >
+                      <option value="">Select State</option>
+                      {[
+                        "Andhra Pradesh",
+                        "Arunachal Pradesh",
+                        "Assam",
+                        "Bihar",
+                        "Chhattisgarh",
+                        "Goa",
+                        "Gujarat",
+                        "Haryana",
+                        "Himachal Pradesh",
+                        "Jharkhand",
+                        "Karnataka",
+                        "Kerala",
+                        "Madhya Pradesh",
+                        "Maharashtra",
+                        "Manipur",
+                        "Meghalaya",
+                        "Mizoram",
+                        "Nagaland",
+                        "Odisha",
+                        "Punjab",
+                        "Rajasthan",
+                        "Sikkim",
+                        "Tamil Nadu",
+                        "Telangana",
+                        "Tripura",
+                        "Uttar Pradesh",
+                        "Uttarakhand",
+                        "West Bengal",
+                        "Andaman and Nicobar Islands",
+                        "Chandigarh",
+                        "Dadra and Nagar Haveli and Daman and Diu",
+                        "Delhi",
+                        "Jammu and Kashmir",
+                        "Ladakh",
+                        "Lakshadweep",
+                        "Puducherry",
+                      ].map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                    {errors["registeredAddress.state"] && (
+                      <p className="text-red-500 text-sm">
+                        {errors["registeredAddress.state"]}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">ZIP Code</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      ZIP Code
+                    </label>
                     <input
                       type="text"
                       name="registeredAddress.zip"
                       value={formData.registeredAddress.zip}
                       onChange={handleChange}
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['registeredAddress.zip'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["registeredAddress.zip"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="ZIP"
                     />
-                    {errors['registeredAddress.zip'] && <p className="text-red-500 text-sm">{errors['registeredAddress.zip']}</p>}
+                    {errors["registeredAddress.zip"] && (
+                      <p className="text-red-500 text-sm">
+                        {errors["registeredAddress.zip"]}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* Country */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Country</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Country
+                  </label>
                   <input
                     type="text"
                     name="registeredAddress.country"
                     value={formData.registeredAddress.country}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                      errors['registeredAddress.country'] 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                      errors["registeredAddress.country"]
+                        ? "border-red-400 focus:border-red-500 bg-red-50"
+                        : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                     }`}
-                    placeholder="Country"
+                    placeholder="India"
                   />
-                  {errors['registeredAddress.country'] && <p className="text-red-500 text-sm">{errors['registeredAddress.country']}</p>}
+                  {errors["registeredAddress.country"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["registeredAddress.country"]}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Contact Information */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-800">Official Contact Information</h3>
-                
+                <h3 className="text-lg font-medium text-gray-800">
+                  Official Contact Information
+                </h3>
+
                 {/* Official Email Domain */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Official Email Domain</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Official Email Domain
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaEnvelope className={`text-lg ${errors.officialEmailDomain ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaEnvelope
+                        className={`text-lg ${
+                          errors.officialEmailDomain
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
                       type="email"
@@ -564,24 +811,38 @@ const CompanyRegistration = () => {
                       value={formData.officialEmailDomain}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors.officialEmailDomain 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors.officialEmailDomain
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="admin@company.com"
                     />
                   </div>
-                  {errors.officialEmailDomain && <p className="text-red-500 text-sm">{errors.officialEmailDomain}</p>}
-                  <p className="text-xs text-gray-500">Use your organization's domain email only</p>
+                  {errors.officialEmailDomain && (
+                    <p className="text-red-500 text-sm">
+                      {errors.officialEmailDomain}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500">
+                    Use your organization's domain email only
+                  </p>
                 </div>
 
                 {/* Primary Contact Email and Phone */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Primary Contact Email</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      Primary Contact Email
+                    </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <FaEnvelope className={`text-lg ${errors.primaryContactEmail ? 'text-red-400' : 'text-gray-400'}`} />
+                        <FaEnvelope
+                          className={`text-lg ${
+                            errors.primaryContactEmail
+                              ? "text-red-400"
+                              : "text-gray-400"
+                          }`}
+                        />
                       </div>
                       <input
                         type="email"
@@ -589,21 +850,33 @@ const CompanyRegistration = () => {
                         value={formData.primaryContactEmail}
                         onChange={handleChange}
                         className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                          errors.primaryContactEmail 
-                            ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                            : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                          errors.primaryContactEmail
+                            ? "border-red-400 focus:border-red-500 bg-red-50"
+                            : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                         }`}
                         placeholder="contact@company.com"
                       />
                     </div>
-                    {errors.primaryContactEmail && <p className="text-red-500 text-sm">{errors.primaryContactEmail}</p>}
+                    {errors.primaryContactEmail && (
+                      <p className="text-red-500 text-sm">
+                        {errors.primaryContactEmail}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Official Phone Number</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      Official Phone Number
+                    </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <FaPhone className={`text-lg ${errors.officialPhone ? 'text-red-400' : 'text-gray-400'}`} />
+                        <FaPhone
+                          className={`text-lg ${
+                            errors.officialPhone
+                              ? "text-red-400"
+                              : "text-gray-400"
+                          }`}
+                        />
                       </div>
                       <input
                         type="tel"
@@ -611,14 +884,18 @@ const CompanyRegistration = () => {
                         value={formData.officialPhone}
                         onChange={handleChange}
                         className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                          errors.officialPhone 
-                            ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                            : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                          errors.officialPhone
+                            ? "border-red-400 focus:border-red-500 bg-red-50"
+                            : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                         }`}
                         placeholder="+1 (555) 123-4567"
                       />
                     </div>
-                    {errors.officialPhone && <p className="text-red-500 text-sm">{errors.officialPhone}</p>}
+                    {errors.officialPhone && (
+                      <p className="text-red-500 text-sm">
+                        {errors.officialPhone}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -626,8 +903,12 @@ const CompanyRegistration = () => {
                 <div className="mt-4 p-4 bg-sky-50 border border-sky-200 rounded-xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-sky-800">Email Verification Required</p>
-                      <p className="text-xs text-sky-600">We'll send an OTP to verify your official email</p>
+                      <p className="text-sm font-medium text-sky-800">
+                        Email Verification Required
+                      </p>
+                      <p className="text-xs text-sky-600">
+                        We'll send an OTP to verify your official email
+                      </p>
                     </div>
                     <button
                       type="button"
@@ -635,7 +916,11 @@ const CompanyRegistration = () => {
                       disabled={!formData.officialEmailDomain || isLoading}
                       className="px-4 py-2 bg-sky-600 text-white text-sm rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      {isLoading ? 'Sending...' : emailVerified ? 'Verified ✓' : 'Send OTP'}
+                      {isLoading
+                        ? "Sending..."
+                        : emailVerified
+                        ? "Verified ✓"
+                        : "Send OTP"}
                     </button>
                   </div>
                 </div>
@@ -647,18 +932,30 @@ const CompanyRegistration = () => {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">Authorized Representative</h2>
-                <p className="text-gray-600">Assign someone accountable for your organization</p>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                  Authorized Representative
+                </h2>
+                <p className="text-gray-600">
+                  Assign someone accountable for your organization
+                </p>
               </div>
 
               {/* Representative Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Full Name */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Full Name</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Full Name
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaUser className={`text-lg ${errors['representative.fullName'] ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaUser
+                        className={`text-lg ${
+                          errors["representative.fullName"]
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
                       type="text"
@@ -666,45 +963,65 @@ const CompanyRegistration = () => {
                       value={formData.representative.fullName}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['representative.fullName'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["representative.fullName"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="Enter full name"
                     />
                   </div>
-                  {errors['representative.fullName'] && <p className="text-red-500 text-sm">{errors['representative.fullName']}</p>}
+                  {errors["representative.fullName"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["representative.fullName"]}
+                    </p>
+                  )}
                 </div>
 
                 {/* Designation */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Designation</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Designation
+                  </label>
                   <select
                     name="representative.designation"
                     value={formData.representative.designation}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                      errors['representative.designation'] 
-                        ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                        : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                      errors["representative.designation"]
+                        ? "border-red-400 focus:border-red-500 bg-red-50"
+                        : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                     }`}
                   >
                     <option value="">Select designation</option>
-                    {designations.map(designation => (
-                      <option key={designation} value={designation}>{designation}</option>
+                    {designations.map((designation) => (
+                      <option key={designation} value={designation}>
+                        {designation}
+                      </option>
                     ))}
                   </select>
-                  {errors['representative.designation'] && <p className="text-red-500 text-sm">{errors['representative.designation']}</p>}
+                  {errors["representative.designation"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["representative.designation"]}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Official Email and Contact */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Official Email ID</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Official Email ID
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaEnvelope className={`text-lg ${errors['representative.officialEmail'] ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaEnvelope
+                        className={`text-lg ${
+                          errors["representative.officialEmail"]
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
                       type="email"
@@ -712,22 +1029,36 @@ const CompanyRegistration = () => {
                       value={formData.representative.officialEmail}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['representative.officialEmail'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["representative.officialEmail"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="john.doe@company.com"
                     />
                   </div>
-                  {errors['representative.officialEmail'] && <p className="text-red-500 text-sm">{errors['representative.officialEmail']}</p>}
-                  <p className="text-xs text-gray-500">Must match organization domain</p>
+                  {errors["representative.officialEmail"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["representative.officialEmail"]}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500">
+                    Must match organization domain
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Contact Number</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Contact Number
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaPhone className={`text-lg ${errors['representative.contactNumber'] ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaPhone
+                        className={`text-lg ${
+                          errors["representative.contactNumber"]
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
                       type="tel"
@@ -735,34 +1066,46 @@ const CompanyRegistration = () => {
                       value={formData.representative.contactNumber}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['representative.contactNumber'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["representative.contactNumber"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="+1 (555) 123-4567"
                     />
                   </div>
-                  {errors['representative.contactNumber'] && <p className="text-red-500 text-sm">{errors['representative.contactNumber']}</p>}
+                  {errors["representative.contactNumber"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["representative.contactNumber"]}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Password Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Password</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Password
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaLock className={`text-lg ${errors['representative.password'] ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaLock
+                        className={`text-lg ${
+                          errors["representative.password"]
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       name="representative.password"
                       value={formData.representative.password}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['representative.password'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["representative.password"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="Enter password"
                     />
@@ -771,45 +1114,73 @@ const CompanyRegistration = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-sky-600 transition-colors"
                     >
-                      {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+                      {showPassword ? (
+                        <FaEyeSlash className="text-lg" />
+                      ) : (
+                        <FaEye className="text-lg" />
+                      )}
                     </button>
                   </div>
-                  {errors['representative.password'] && <p className="text-red-500 text-sm">{errors['representative.password']}</p>}
+                  {errors["representative.password"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["representative.password"]}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Confirm Password
+                  </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FaLock className={`text-lg ${errors['representative.confirmPassword'] ? 'text-red-400' : 'text-gray-400'}`} />
+                      <FaLock
+                        className={`text-lg ${
+                          errors["representative.confirmPassword"]
+                            ? "text-red-400"
+                            : "text-gray-400"
+                        }`}
+                      />
                     </div>
                     <input
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type={showConfirmPassword ? "text" : "password"}
                       name="representative.confirmPassword"
                       value={formData.representative.confirmPassword}
                       onChange={handleChange}
                       className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                        errors['representative.confirmPassword'] 
-                          ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                          : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                        errors["representative.confirmPassword"]
+                          ? "border-red-400 focus:border-red-500 bg-red-50"
+                          : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                       }`}
                       placeholder="Confirm password"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-sky-600 transition-colors"
                     >
-                      {showConfirmPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+                      {showConfirmPassword ? (
+                        <FaEyeSlash className="text-lg" />
+                      ) : (
+                        <FaEye className="text-lg" />
+                      )}
                     </button>
                   </div>
-                  {errors['representative.confirmPassword'] && <p className="text-red-500 text-sm">{errors['representative.confirmPassword']}</p>}
+                  {errors["representative.confirmPassword"] && (
+                    <p className="text-red-500 text-sm">
+                      {errors["representative.confirmPassword"]}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* ID Proof Upload */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">ID Proof (Optional)</label>
+                <label className="text-sm font-medium text-gray-700">
+                  ID Proof (Optional)
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <FaIdCard className="text-lg text-gray-400" />
@@ -819,18 +1190,20 @@ const CompanyRegistration = () => {
                     name="representative.idProof"
                     accept=".pdf,.jpg,.jpeg,.png"
                     onChange={(e) => {
-                      setFormData(prev => ({
+                      setFormData((prev) => ({
                         ...prev,
                         representative: {
                           ...prev.representative,
-                          idProof: e.target.files[0]
-                        }
+                          idProof: e.target.files[0],
+                        },
                       }));
                     }}
                     className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-sky-500 hover:border-gray-300 transition-all duration-300"
                   />
                 </div>
-                <p className="text-xs text-gray-500">Government ID or Company ID (PDF, JPG, PNG - Max 5MB)</p>
+                <p className="text-xs text-gray-500">
+                  Government ID or Company ID (PDF, JPG, PNG - Max 5MB)
+                </p>
               </div>
             </div>
           )}
@@ -839,8 +1212,12 @@ const CompanyRegistration = () => {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">Review & Verification</h2>
-                <p className="text-gray-600">Please review all information before submitting</p>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                  Review & Verification
+                </h2>
+                <p className="text-gray-600">
+                  Please review all information before submitting
+                </p>
               </div>
 
               {/* Summary Cards */}
@@ -852,11 +1229,26 @@ const CompanyRegistration = () => {
                     Organization Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div><span className="font-medium">Name:</span> {formData.organizationName}</div>
-                    <div><span className="font-medium">Type:</span> {formData.organizationType}</div>
-                    <div><span className="font-medium">Industry:</span> {formData.industrySector}</div>
-                    <div><span className="font-medium">Established:</span> {formData.establishmentDate}</div>
-                    <div className="md:col-span-2"><span className="font-medium">Website:</span> {formData.websiteUrl}</div>
+                    <div>
+                      <span className="font-medium">Name:</span>{" "}
+                      {formData.organizationName}
+                    </div>
+                    <div>
+                      <span className="font-medium">Type:</span>{" "}
+                      {formData.organizationType}
+                    </div>
+                    <div>
+                      <span className="font-medium">Industry:</span>{" "}
+                      {formData.industrySector}
+                    </div>
+                    <div>
+                      <span className="font-medium">Established:</span>{" "}
+                      {formData.establishmentDate}
+                    </div>
+                    <div className="md:col-span-2">
+                      <span className="font-medium">Website:</span>{" "}
+                      {formData.websiteUrl}
+                    </div>
                   </div>
                 </div>
 
@@ -867,9 +1259,22 @@ const CompanyRegistration = () => {
                     Contact Information
                   </h3>
                   <div className="text-sm space-y-2">
-                    <div><span className="font-medium">Address:</span> {formData.registeredAddress.street}, {formData.registeredAddress.city}, {formData.registeredAddress.state} {formData.registeredAddress.zip}, {formData.registeredAddress.country}</div>
-                    <div><span className="font-medium">Email:</span> {formData.officialEmailDomain}</div>
-                    <div><span className="font-medium">Phone:</span> {formData.officialPhone}</div>
+                    <div>
+                      <span className="font-medium">Address:</span>{" "}
+                      {formData.registeredAddress.street},{" "}
+                      {formData.registeredAddress.city},{" "}
+                      {formData.registeredAddress.state}{" "}
+                      {formData.registeredAddress.zip},{" "}
+                      {formData.registeredAddress.country}
+                    </div>
+                    <div>
+                      <span className="font-medium">Email:</span>{" "}
+                      {formData.officialEmailDomain}
+                    </div>
+                    <div>
+                      <span className="font-medium">Phone:</span>{" "}
+                      {formData.officialPhone}
+                    </div>
                   </div>
                 </div>
 
@@ -880,10 +1285,22 @@ const CompanyRegistration = () => {
                     Authorized Representative
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div><span className="font-medium">Name:</span> {formData.representative.fullName}</div>
-                    <div><span className="font-medium">Designation:</span> {formData.representative.designation}</div>
-                    <div><span className="font-medium">Email:</span> {formData.representative.officialEmail}</div>
-                    <div><span className="font-medium">Contact:</span> {formData.representative.contactNumber}</div>
+                    <div>
+                      <span className="font-medium">Name:</span>{" "}
+                      {formData.representative.fullName}
+                    </div>
+                    <div>
+                      <span className="font-medium">Designation:</span>{" "}
+                      {formData.representative.designation}
+                    </div>
+                    <div>
+                      <span className="font-medium">Email:</span>{" "}
+                      {formData.representative.officialEmail}
+                    </div>
+                    <div>
+                      <span className="font-medium">Contact:</span>{" "}
+                      {formData.representative.contactNumber}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -899,10 +1316,17 @@ const CompanyRegistration = () => {
                     className="w-5 h-5 text-sky-600 border-gray-300 rounded focus:ring-sky-500 mt-1"
                   />
                   <span className="text-sm text-gray-600">
-                    I confirm that all information provided is true and accurate. All documents are valid and I have the authority to register this organization for online proctoring services.
+                    I confirm that all information provided is true and
+                    accurate. All documents are valid and I have the authority
+                    to register this organization for online proctoring
+                    services.
                   </span>
                 </label>
-                {errors.confirmationAccepted && <p className="text-red-500 text-sm">{errors.confirmationAccepted}</p>}
+                {errors.confirmationAccepted && (
+                  <p className="text-red-500 text-sm">
+                    {errors.confirmationAccepted}
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -919,9 +1343,9 @@ const CompanyRegistration = () => {
                 Previous
               </button>
             )}
-            
+
             <div className="flex-1"></div>
-            
+
             {currentStep < 4 ? (
               <button
                 type="button"
@@ -943,7 +1367,7 @@ const CompanyRegistration = () => {
                     Submitting...
                   </div>
                 ) : (
-                  'Submit Registration'
+                  "Submit Registration"
                 )}
               </button>
             )}
@@ -953,8 +1377,11 @@ const CompanyRegistration = () => {
         {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-gray-600 text-sm">
-            Already registered?{' '}
-            <Link to="/login" className="text-sky-600 hover:text-sky-800 font-medium">
+            Already registered?{" "}
+            <Link
+              to="/login"
+              className="text-sky-600 hover:text-sky-800 font-medium"
+            >
               Sign in to your account
             </Link>
           </p>
