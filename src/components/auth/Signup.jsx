@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { signUpCompany } from "../service/authService";
+import { sendOTP, verifyOTP, signUpCompany } from "../service/authService";
 import {
   FaBuilding,
   FaEnvelope,
@@ -61,7 +61,10 @@ const CompanyRegistration = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [emailVerified, setEmailVerified] = useState(false);
+  const [error, setError] = useState("");
 
   const organizationTypes = [
     "University",

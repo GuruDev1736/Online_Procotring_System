@@ -6,7 +6,6 @@ export const login = async (email, password) => {
   const data = await apiRequest("/auth/login", "POST", body);
 
   if (data.STS === "200") {
-    // ✅ Store token & user
     localStorage.setItem("token", data.CONTENT.token);
     localStorage.setItem("user", JSON.stringify(data.CONTENT));
   }
@@ -14,9 +13,32 @@ export const login = async (email, password) => {
   return data;
 };
 
+export const sendOTP = async (email) => {
+  const body = { email };
+  return await apiRequest(
+    "/forgot-password/send-otp?email=guruprasad1736@gmail.com",
+    "POST",
+    body
+  );
+};
 
-// export const signUp = async()
+export const verifyOTP = async (email, otp) => {
+  const body = { email, otp };
+  return await apiRequest(
+    "/forgot-password/verify-otp?email=guruprasad1736@gmail.com&otp=8384",
+    "POST",
+    body
+  );
+};
 
+export const changePassword = async (email, newPassword) => {
+  const body = { email, newPassword };
+  return await apiRequest(
+    "/forgot-password/reset-password?email=guruprasad1736@gmail.com&newPassword=guru@123",
+    "POST",
+    body
+  );
+};
 
 export const logout = () => {
   localStorage.removeItem("token");
