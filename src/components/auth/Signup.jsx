@@ -63,7 +63,7 @@ const CompanyRegistration = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailVerified, handleEmailVerified] = useState(false);
   const [error, setError] = useState("");
 
   const organizationTypes = [
@@ -325,15 +325,43 @@ const CompanyRegistration = () => {
     }
   };
 
-  const sendVerificationEmail = () => {
-    setIsLoading(true);
-    // Simulate email verification
-    setTimeout(() => {
-      setIsLoading(false);
-      setEmailVerified(true);
-      alert("Verification email sent successfully!");
-    }, 1500);
-  };
+  const handleEmailSubmit = async (emailAddress) => {
+      setLoading(true);
+      try {
+        const res = await sendOTP(emailAddress);
+        if (res?.STS === "200") {
+          setEmail(emailAddress);
+          setCurrentStep("otp");
+        } else {
+          alert(res?.MESSAGE || "Failed to send OTP. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        alert("Something went wrong while sending OTP.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    // Step 2: Verify OTP
+    const handleOTPVerified = async (otp) => {
+      setLoading(true);
+      try {
+        const res = await verifyOTP(email, otp);
+        if (res?.STS === "200") {
+          console.log("OTP verified:", otp);
+          setCurrentStep("reset");
+        } else {
+          alert(res?.MESSAGE || "Invalid OTP. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error verifying OTP:", error);
+        alert("Something went wrong while verifying OTP.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
 
   const getStepIcon = (step) => {
     switch (step) {

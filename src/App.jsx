@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
-import ForgotPasswordFlow from "./components/auth/ForgotPasswordFlow";
+import ForgotPassword from "./components/auth/ForgotPassword";
 import Unauthorized from "./pages/Unauthorized";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
 import CompanyDashboard from "./components/dashboard/CompanyDashboard";
@@ -20,7 +20,7 @@ function App() {
         <Route path="/home" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPasswordFlow />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         <Route path="/user/dashboard" element={<UserDashboard />} />
