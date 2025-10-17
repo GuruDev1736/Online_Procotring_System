@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaLock, FaEye, FaEyeSlash, FaCheckCircle } from 'react-icons/fa';
 import { MdSecurity } from 'react-icons/md';
 import ThreeBackground from '../common/ThreeBackground';
+import ErrorDialog from '../common/ErrorDialog';
+import { changePassword } from '../service/authService';
 
 const ResetPassword = ({ email, onPasswordReset }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: ''
@@ -14,6 +17,7 @@ const ResetPassword = ({ email, onPasswordReset }) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorDialog, setErrorDialog] = useState({ isOpen: false, title: '', message: '' });
 
   const validatePassword = (password) => {
     const requirements = {
@@ -66,14 +70,30 @@ const ResetPassword = ({ email, onPasswordReset }) => {
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
       
-      // Simulate password reset API call
-      setTimeout(() => {
-        setIsLoading(false);
-        setIsSuccess(true);
-        if (onPasswordReset) {
-          onPasswordReset(formData.password);
+      try {
+        const res = await changePassword(email, formData.password);
+        if (res?.STS === "200") {
+          setIsSuccess(true);
+          if (onPasswordReset) {
+            onPasswordReset(formData.password);
+          }
+        } else {
+          setErrorDialog({
+            isOpen: true,
+            title: 'Password Reset Failed',
+            message: res?.MSG || "Failed to reset password. Please try again."
+          });
         }
-      }, 2000);
+      } catch (err) {
+        console.error("Error resetting password:", err);
+        setErrorDialog({
+          isOpen: true,
+          title: 'Error',
+          message: "Something went wrong while resetting password."
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -104,12 +124,12 @@ const ResetPassword = ({ email, onPasswordReset }) => {
             Your password has been successfully reset. You can now login with your new password.
           </p>
           
-          <Link
-            to="/login"
-            className="w-full inline-block bg-gradient-to-r from-sky-500 to-sky-600 text-white font-semibold py-3 px-4 rounded-xl hover:from-sky-600 hover:to-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-300 transition-all duration-300 transform hover:scale-[1.02] text-center"
+          <button
+            onClick={() => navigate('/login')}
+            className="w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white font-semibold py-3 px-4 rounded-xl hover:from-sky-600 hover:to-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-300 transition-all duration-300 transform hover:scale-[1.02]"
           >
             Continue to Login
-          </Link>
+          </button>
         </div>
       </div>
     );
@@ -117,6 +137,14 @@ const ResetPassword = ({ email, onPasswordReset }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Error Dialog */}
+      <ErrorDialog
+        isOpen={errorDialog.isOpen}
+        onClose={() => setErrorDialog({ isOpen: false, title: '', message: '' })}
+        title={errorDialog.title}
+        message={errorDialog.message}
+      />
+
       {/* Three.js Background */}
       <ThreeBackground />
       

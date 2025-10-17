@@ -14,29 +14,23 @@ export const login = async (email, password) => {
 };
 
 export const sendOTP = async (email) => {
-  const body = { email };
   return await apiRequest(
-    "/forgot-password/send-otp?email=guruprasad1736@gmail.com",
-    "POST",
-    body
+    `/forgot-password/send-otp?email=${email}`,
+    "POST"
   );
 };
 
 export const verifyOTP = async (email, otp) => {
-  const body = { email, otp };
   return await apiRequest(
-    "/forgot-password/verify-otp?email=guruprasad1736@gmail.com&otp=8384",
-    "POST",
-    body
+    `/forgot-password/verify-otp?email=${email}&otp=${otp}`,
+    "POST"
   );
 };
 
 export const changePassword = async (email, newPassword) => {
-  const body = { email, newPassword };
   return await apiRequest(
-    "/forgot-password/reset-password?email=guruprasad1736@gmail.com&newPassword=guru@123",
-    "POST",
-    body
+    `/forgot-password/reset-password?email=${email}&newPassword=${newPassword}`,
+    "POST"
   );
 };
 
@@ -71,20 +65,20 @@ export const signUpCompany = async (
   const body = {
     organizationName: organizationName,
     organizationType: organizationType,
-    dateOfEstablishment: "2020-01-15",
-    industrySector: "Information Technology",
-    organizationWebsite: "https://techsolutions.com",
-    organizationAddress: "123 Business Street, Tech City, State 12345, Country",
-    organizationLogo: "https://techsolutions.com/assets/logo.png",
-    emailDomain: "techsolutions.com",
-    primaryContactEmail: "contact@techsolutions.com",
-    officialPhoneNumber: "+1-555-123-4567",
-    representativeFullName: "John Smith",
-    representativeDesignation: "Chief Executive Officer",
-    representativeContactNumber: "+1-555-987-6543",
-    representativeEmail: "john.smith@techsolutions.com",
-    idProof: "passport_123456789",
-    password: "SecurePassword123!",
+    dateOfEstablishment: dateOfEstablishment,
+    industrySector: industrySector,
+    organizationWebsite: organizationWebsite,
+    organizationAddress: organizationAddress,
+    organizationLogo: organizationLogo,
+    emailDomain: emailDomain,
+    primaryContactEmail: primaryContactEmail,
+    officialPhoneNumber: officialPhoneNumber,
+    representativeFullName: representativeFullName,
+    representativeDesignation: representativeDesignation,
+    representativeContactNumber: representativeContactNumber,
+    representativeEmail: representativeEmail,
+    idProof: idProof,
+    password: password
   };
   const data = await apiRequest("/auth/company/register", "POST", body);
   return data;

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdSecurity } from "react-icons/md";
 import ThreeBackground from "../common/ThreeBackground";
+import ErrorDialog from "../common/ErrorDialog";
 import { getCurrentUser, login } from "../service/authService";
 
 const Login = () => {
@@ -13,6 +14,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [errorDialog, setErrorDialog] = useState({ isOpen: false, title: '', message: '' });
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -65,10 +67,18 @@ const Login = () => {
         if (result.STS === "200") {
           navigate("/home");
         } else {
-          setErrors(result.MSG || "Invalid Credentials");
+          setErrorDialog({
+            isOpen: true,
+            title: 'Login Failed',
+            message: result.MSG || "Invalid Credentials"
+          });
         }
       } catch (error) {
-        setErrors({ general: error.message });
+        setErrorDialog({
+          isOpen: true,
+          title: 'Login Error',
+          message: error.message || "An error occurred during login. Please try again."
+        });
       } finally {
         setIsLoading(false);
       }
@@ -77,6 +87,14 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Error Dialog */}
+      <ErrorDialog
+        isOpen={errorDialog.isOpen}
+        onClose={() => setErrorDialog({ isOpen: false, title: '', message: '' })}
+        title={errorDialog.title}
+        message={errorDialog.message}
+      />
+
       {/* Three.js Background */}
       <ThreeBackground />
 
