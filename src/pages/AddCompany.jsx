@@ -14,7 +14,6 @@ import {
 } from 'react-icons/fa';
 import { MdBusiness } from 'react-icons/md';
 import AdminLayout from '../components/layout/AdminLayout';
-import { ROUTES, PAYMENT_PLANS } from '../constants';
 
 const AddCompany = () => {
   const [currentStep, setCurrentStep] = useState(1);

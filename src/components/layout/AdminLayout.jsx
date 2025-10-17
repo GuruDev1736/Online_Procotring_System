@@ -11,8 +11,6 @@ import {
   FaSignOutAlt,
   FaUserCircle
 } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext';
-import { ROUTES } from '../../constants';
 import ThreeBackground from '../common/ThreeBackground';
 
 const AdminLayout = ({ children }) => {

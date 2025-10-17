@@ -1,18 +1,29 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
-import { MdSecurity } from 'react-icons/md';
-import ThreeBackground from '../common/ThreeBackground';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { MdSecurity } from "react-icons/md";
+import ThreeBackground from "../common/ThreeBackground";
+import { getCurrentUser, login } from "../service/authService";
 
 const Login = () => {
-  const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    const remeberMe = localStorage.getItem("rememberMe");
+    if (remeberMe === "true") {
+      setRememberMe(true);
+      if (user && user.userName) {
+        setEmail(user.userName);
+      }
+    }
+  }, []);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,15 +39,21 @@ const Login = () => {
     const newErrors = {};
 
     if (!email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = "Please enter a valid email";
     }
 
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (rememberMe) {
+      localStorage.setItem("rememberMe", "true");
+    } else {
+      localStorage.removeItem("rememberMe");
     }
 
     setErrors(newErrors);
@@ -45,8 +62,10 @@ const Login = () => {
       setIsLoading(true);
       try {
         const result = await login(email, password);
-        if (result.success) {
-          navigate(result.redirectPath);
+        if (result.STS === "200") {
+          navigate("/home");
+        } else {
+          setErrors(result.MSG || "Invalid Credentials");
         }
       } catch (error) {
         setErrors({ general: error.message });
@@ -60,7 +79,7 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-sky-400 via-sky-500 to-sky-600 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Three.js Background */}
       <ThreeBackground />
-      
+
       {/* Background Animation */}
       <div className="absolute inset-0 overflow-hidden" style={{ zIndex: 2 }}>
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-r from-sky-300/20 to-sky-400/20 rounded-full animate-pulse"></div>
@@ -68,7 +87,10 @@ const Login = () => {
       </div>
 
       {/* Login Card */}
-      <div className="relative bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20" style={{ zIndex: 3 }}>
+      <div
+        className="relative bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20"
+        style={{ zIndex: 3 }}
+      >
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -92,22 +114,28 @@ const Login = () => {
           )}
           {/* Email Field */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Email Address</label>
+            <label className="text-sm font-medium text-gray-700">
+              Email Address
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <FaEnvelope className={`text-lg ${errors.email ? 'text-red-400' : 'text-gray-400'}`} />
+                <FaEnvelope
+                  className={`text-lg ${
+                    errors.email ? "text-red-400" : "text-gray-400"
+                  }`}
+                />
               </div>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  if (errors.email) setErrors({ ...errors, email: '' });
+                  if (errors.email) setErrors({ ...errors, email: "" });
                 }}
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                  errors.email 
-                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                    : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                  errors.email
+                    ? "border-red-400 focus:border-red-500 bg-red-50"
+                    : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                 }`}
                 placeholder="Enter your email"
               />
@@ -121,22 +149,28 @@ const Login = () => {
 
           {/* Password Field */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Password
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <FaLock className={`text-lg ${errors.password ? 'text-red-400' : 'text-gray-400'}`} />
+                <FaLock
+                  className={`text-lg ${
+                    errors.password ? "text-red-400" : "text-gray-400"
+                  }`}
+                />
               </div>
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  if (errors.password) setErrors({ ...errors, password: '' });
+                  if (errors.password) setErrors({ ...errors, password: "" });
                 }}
                 className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:outline-none transition-all duration-300 ${
-                  errors.password 
-                    ? 'border-red-400 focus:border-red-500 bg-red-50' 
-                    : 'border-gray-200 focus:border-sky-500 hover:border-gray-300'
+                  errors.password
+                    ? "border-red-400 focus:border-red-500 bg-red-50"
+                    : "border-gray-200 focus:border-sky-500 hover:border-gray-300"
                 }`}
                 placeholder="Enter your password"
               />
@@ -145,7 +179,11 @@ const Login = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-sky-600 transition-colors"
               >
-                {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+                {showPassword ? (
+                  <FaEyeSlash className="text-lg" />
+                ) : (
+                  <FaEye className="text-lg" />
+                )}
               </button>
             </div>
             {errors.password && (
@@ -159,12 +197,19 @@ const Login = () => {
           <div className="flex items-center justify-between">
             <label className="flex items-center">
               <input
+                onChange={(e) => {
+                  setRememberMe(e.target.checked);
+                }}
+                checked={rememberMe}
                 type="checkbox"
                 className="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500"
               />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <Link to="/forgot-password" className="text-sm text-sky-600 hover:text-sky-800 font-medium">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-sky-600 hover:text-sky-800 font-medium"
+            >
               Forgot password?
             </Link>
           </div>
@@ -181,7 +226,7 @@ const Login = () => {
                 Signing in...
               </div>
             ) : (
-              'Sign In'
+              "Sign In"
             )}
           </button>
         </form>
@@ -189,21 +234,14 @@ const Login = () => {
         {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-gray-600 text-sm">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-sky-600 hover:text-sky-800 font-medium">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-sky-600 hover:text-sky-800 font-medium"
+            >
               Sign up here
             </Link>
           </p>
-        </div>
-
-        {/* Demo Credentials */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <h4 className="text-sm font-semibold text-blue-900 mb-2">Demo Credentials:</h4>
-          <div className="text-xs text-blue-800 space-y-1">
-            <p><strong>Admin:</strong> admin@proctorai.com / admin123</p>
-            <p><strong>Company:</strong> company@example.com / company123</p>
-            <p><strong>User:</strong> user@example.com / user123</p>
-          </div>
         </div>
       </div>
     </div>

@@ -18,7 +18,6 @@ import {
   FaChevronRight
 } from 'react-icons/fa';
 import AdminLayout from '../components/layout/AdminLayout';
-import { ROUTES, PAYMENT_PLANS } from '../constants';
 
 const ManageCompanies = () => {
   const [companies, setCompanies] = useState([]);
