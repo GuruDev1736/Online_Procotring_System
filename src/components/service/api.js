@@ -1,5 +1,5 @@
 // src/services/api.js
-const BASE_URL = "http://185.215.150.198:5000";
+const BASE_URL = "https://proctoring.pixelsengineers.cloud"
 
 export const apiRequest = async (
   endpoint,

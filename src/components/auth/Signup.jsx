@@ -305,8 +305,8 @@ const CompanyRegistration = () => {
                 formData.representative.fullName,
                 formData.representative.designation,
                 formData.representative.contactNumber,
-                formData.representative.contactNumber,
                 formData.representative.officialEmail,
+                formData.representative.idProof,
                 formData.representative.confirmPassword
             );
 
