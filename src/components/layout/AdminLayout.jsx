@@ -12,10 +12,12 @@ import {
   FaUserCircle
 } from 'react-icons/fa';
 import ThreeBackground from '../common/ThreeBackground';
+import { ROUTES } from '../../constants';
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  // const { user, logout } = useAuth(); // TODO: Implement AuthContext
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -41,8 +43,10 @@ const AdminLayout = ({ children }) => {
   ];
 
   const handleLogout = () => {
-    logout();
-    navigate(ROUTES.HOME);
+    // logout(); // TODO: Implement logout functionality
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate(ROUTES.LOGIN, { replace: true });
   };
 
   return (
@@ -111,7 +115,7 @@ const AdminLayout = ({ children }) => {
               </p>
             </div>
             <button
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
               className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
               title="Logout"
             >
@@ -153,6 +157,37 @@ const AdminLayout = ({ children }) => {
           {children}
         </main>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+              <FaSignOutAlt className="text-red-600 text-xl" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-2">
+              Confirm Logout
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              Are you sure you want to logout? You will need to login again to access the admin panel.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

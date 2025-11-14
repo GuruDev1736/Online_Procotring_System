@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaUser,
   FaFileAlt,
@@ -14,10 +15,18 @@ import {
   FaCheckCircle,
   FaTimesCircle,
 } from "react-icons/fa";
+import { ROUTES } from "../../constants";
 
 const UserDashboard = () => {
-  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate(ROUTES.LOGIN, { replace: true });
+  };
 
   const tabs = [
     { id: "overview", label: "Overview", icon: FaChartBar },
@@ -389,21 +398,19 @@ const UserDashboard = () => {
               </button>
 
               <div className="flex items-center space-x-3">
-                <img
-                  src={user?.avatar}
-                  alt={user?.name}
-                  className="w-8 h-8 rounded-full"
-                />
+                <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white font-semibold">
+                  {JSON.parse(localStorage.getItem('user') || '{}')?.name?.charAt(0) || 'U'}
+                </div>
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-900">
-                    {user?.name}
+                    {JSON.parse(localStorage.getItem('user') || '{}')?.name || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500">{user?.role}</p>
+                  <p className="text-xs text-gray-500">Student</p>
                 </div>
               </div>
 
               <button
-                onClick={logout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="p-2 text-gray-400 hover:text-red-600 transition-colors"
               >
                 <FaSignOutAlt className="text-xl" />
@@ -425,7 +432,7 @@ const UserDashboard = () => {
                   </div>
                   <div>
                     <h2 className="font-semibold text-gray-900">
-                      {user?.name}
+                      {JSON.parse(localStorage.getItem('user') || '{}')?.name || 'User'}
                     </h2>
                     <p className="text-sm text-gray-600">Student Portal</p>
                   </div>
@@ -455,6 +462,37 @@ const UserDashboard = () => {
           <div className="flex-1">{renderTabContent()}</div>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+              <FaSignOutAlt className="text-red-600 text-xl" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-2">
+              Confirm Logout
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              Are you sure you want to logout? You will need to login again to access your dashboard.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* AI Chatbox */}
       <AIChatbox />

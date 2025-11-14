@@ -7,9 +7,12 @@ import ForgotPassword from "./components/auth/ForgotPassword";
 import Unauthorized from "./pages/Unauthorized";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
 import CompanyDashboard from "./components/dashboard/CompanyDashboard";
+import HRDashboard from "./components/dashboard/HRDashboard";
 import UserDashboard from "./components/dashboard/UserDashboard";
 import AddCompany from "./pages/AddCompany";
 import ManageCompanies from "./pages/ManageCompanies";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import { USER_ROLES } from "./constants";
 
 function App() {
   return (
@@ -23,7 +26,43 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
-        <Route path="/user/dashboard" element={<UserDashboard />} />
+        {/* User Dashboard */}
+        <Route path="/user/dashboard" element={
+          <ProtectedRoute allowedRoles={[USER_ROLES.USER]}>
+            <UserDashboard />
+          </ProtectedRoute>
+        } />
+        
+        {/* Company Dashboard */}
+        <Route path="/company/dashboard" element={
+          <ProtectedRoute allowedRoles={[USER_ROLES.COMPANY]}>
+            <CompanyDashboard />
+          </ProtectedRoute>
+        } />
+        
+        {/* HR Dashboard */}
+        <Route path="/hr/dashboard" element={
+          <ProtectedRoute allowedRoles={[USER_ROLES.HR]}>
+            <HRDashboard />
+          </ProtectedRoute>
+        } />
+        
+        {/* Admin Dashboard & Routes */}
+        <Route path="/admin/dashboard" element={
+          <ProtectedRoute allowedRoles={[USER_ROLES.SUPER_ADMIN]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/companies/add" element={
+          <ProtectedRoute allowedRoles={[USER_ROLES.SUPER_ADMIN]}>
+            <AddCompany />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/companies" element={
+          <ProtectedRoute allowedRoles={[USER_ROLES.SUPER_ADMIN]}>
+            <ManageCompanies />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );

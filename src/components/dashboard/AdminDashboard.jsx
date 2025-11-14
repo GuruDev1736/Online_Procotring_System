@@ -13,11 +13,18 @@ import {
   FaDollarSign,
   FaUserShield,
 } from "react-icons/fa";
+import { ROUTES } from "../../constants";
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate(ROUTES.LOGIN, { replace: true });
+  };
 
   const tabs = [
     { id: "overview", label: "Overview", icon: FaChartBar },
@@ -270,21 +277,19 @@ const AdminDashboard = () => {
               </button>
 
               <div className="flex items-center space-x-3">
-                <img
-                  src={user?.avatar}
-                  alt={user?.name}
-                  className="w-8 h-8 rounded-full"
-                />
+                <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold">
+                  {JSON.parse(localStorage.getItem('user') || '{}')?.name?.charAt(0) || 'A'}
+                </div>
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-900">
-                    {user?.name}
+                    {JSON.parse(localStorage.getItem('user') || '{}')?.name || 'Admin User'}
                   </p>
-                  <p className="text-xs text-gray-500">{user?.role}</p>
+                  <p className="text-xs text-gray-500">Admin</p>
                 </div>
               </div>
 
               <button
-                onClick={logout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="p-2 text-gray-400 hover:text-red-600 transition-colors"
               >
                 <FaSignOutAlt className="text-xl" />

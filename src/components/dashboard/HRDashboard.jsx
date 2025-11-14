@@ -3,33 +3,31 @@ import { useNavigate } from "react-router-dom";
 import {
   FaUsers,
   FaFileAlt,
-  FaChartBar,
   FaCog,
   FaSignOutAlt,
   FaBell,
   FaSearch,
   FaPlus,
-  FaEye,
   FaCalendar,
   FaBuilding,
-  FaClock,
   FaRobot,
   FaCode,
   FaUserTie,
-  FaCreditCard,
   FaUser,
 } from "react-icons/fa";
 import { ROUTES } from "../../constants";
 
-const CompanyDashboard = () => {
+const HRDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("manage-hrs");
+  const [activeTab, setActiveTab] = useState("manual-interview");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const menuItems = [
-    { id: "manage-hrs", label: "Manage HR's", icon: FaUsers },
-    { id: "manage-candidates", label: "Manage Candidates", icon: FaUserTie },
-    { id: "manage-meetings", label: "Manage Meetings", icon: FaCalendar },
+    { id: "manual-interview", label: "Manual Interview", icon: FaUserTie },
+    { id: "ai-interview", label: "AI Interview", icon: FaRobot },
+    { id: "aptitude-test", label: "Aptitude Test", icon: FaFileAlt },
+    { id: "coding-test", label: "Coding Test", icon: FaCode },
+    { id: "meeting-scheduling", label: "Meeting Scheduling", icon: FaCalendar },
     { id: "profile", label: "Profile", icon: FaUser },
     { id: "settings", label: "Settings", icon: FaCog },
   ];
@@ -40,102 +38,89 @@ const CompanyDashboard = () => {
     navigate(ROUTES.LOGIN, { replace: true });
   };
 
-  const stats = [
-    { label: "Total Exams", value: "24", icon: FaFileAlt, color: "blue" },
-    { label: "Active Candidates", value: "156", icon: FaUsers, color: "green" },
-    {
-      label: "Completed Exams",
-      value: "89",
-      icon: FaChartBar,
-      color: "purple",
-    },
-    {
-      label: "Scheduled Today",
-      value: "12",
-      icon: FaCalendar,
-      color: "orange",
-    },
-  ];
-
-  const recentExams = [
-    {
-      id: 1,
-      title: "Frontend Developer Assessment",
-      candidates: 23,
-      status: "active",
-      date: "2024-01-15",
-    },
-    {
-      id: 2,
-      title: "Data Science Quiz",
-      candidates: 45,
-      status: "scheduled",
-      date: "2024-01-18",
-    },
-    {
-      id: 3,
-      title: "Python Programming Test",
-      candidates: 67,
-      status: "completed",
-      date: "2024-01-12",
-    },
-  ];
-
-  const upcomingExams = [
-    { id: 1, title: "React Developer Test", time: "10:00 AM", candidates: 15 },
-    { id: 2, title: "Database Design Quiz", time: "2:00 PM", candidates: 28 },
-    { id: 3, title: "System Design Interview", time: "4:30 PM", candidates: 8 },
-  ];
-
   const renderTabContent = () => {
     switch (activeTab) {
-      case "manage-hrs":
+      case "manual-interview":
         return (
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Manage HR's</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Manual Interview</h3>
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors">
                 <FaPlus />
-                Add New HR
-              </button>
-            </div>
-            <div className="text-center py-12">
-              <FaUsers className="text-4xl text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">HR management coming soon...</p>
-            </div>
-          </div>
-        );
-
-      case "manage-candidates":
-        return (
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Manage Candidates</h3>
-              <button className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 transition-colors">
-                <FaPlus />
-                Add Candidate
+                Schedule Interview
               </button>
             </div>
             <div className="text-center py-12">
               <FaUserTie className="text-4xl text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Candidate management coming soon...</p>
+              <p className="text-gray-600">Manual interview management coming soon...</p>
             </div>
           </div>
         );
 
-      case "manage-meetings":
+      case "ai-interview":
         return (
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Manage Meetings</h3>
+              <h3 className="text-lg font-semibold text-gray-900">AI Interview</h3>
               <button className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700 transition-colors">
+                <FaPlus />
+                Create AI Interview
+              </button>
+            </div>
+            <div className="text-center py-12">
+              <FaRobot className="text-4xl text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">AI-powered interview system coming soon...</p>
+            </div>
+          </div>
+        );
+
+      case "aptitude-test":
+        return (
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Aptitude Test</h3>
+              <button className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 transition-colors">
+                <FaPlus />
+                Create Test
+              </button>
+            </div>
+            <div className="text-center py-12">
+              <FaFileAlt className="text-4xl text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">Aptitude test management coming soon...</p>
+            </div>
+          </div>
+        );
+
+      case "coding-test":
+        return (
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Coding Test</h3>
+              <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-indigo-700 transition-colors">
+                <FaPlus />
+                Create Coding Test
+              </button>
+            </div>
+            <div className="text-center py-12">
+              <FaCode className="text-4xl text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">Coding test platform coming soon...</p>
+            </div>
+          </div>
+        );
+
+      case "meeting-scheduling":
+        return (
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">Meeting Scheduling</h3>
+              <button className="bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-orange-700 transition-colors">
                 <FaPlus />
                 Schedule Meeting
               </button>
             </div>
             <div className="text-center py-12">
               <FaCalendar className="text-4xl text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Meeting management coming soon...</p>
+              <p className="text-gray-600">Meeting scheduling system coming soon...</p>
             </div>
           </div>
         );
@@ -143,7 +128,7 @@ const CompanyDashboard = () => {
       case "profile":
         return (
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Company Profile</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">HR Profile</h3>
             <div className="text-center py-12">
               <FaUser className="text-4xl text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">Profile management coming soon...</p>
@@ -164,7 +149,7 @@ const CompanyDashboard = () => {
 
       default:
         return (
-          <div className="space-y-6">{/* Overview content remains the same */}</div>
+          <div className="space-y-6">{/* Overview content */}</div>
         );
     }
   };
@@ -177,7 +162,7 @@ const CompanyDashboard = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-xl font-semibold text-gray-900">
-                Company Dashboard
+                HR Dashboard
               </h1>
             </div>
 
@@ -196,14 +181,14 @@ const CompanyDashboard = () => {
               </button>
 
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                  {JSON.parse(localStorage.getItem('user') || '{}')?.name?.charAt(0) || 'C'}
+                <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold">
+                  {JSON.parse(localStorage.getItem('user') || '{}')?.name?.charAt(0) || 'H'}
                 </div>
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-900">
-                    {JSON.parse(localStorage.getItem('user') || '{}')?.name || 'Company User'}
+                    {JSON.parse(localStorage.getItem('user') || '{}')?.name || 'HR User'}
                   </p>
-                  <p className="text-xs text-gray-500">Company</p>
+                  <p className="text-xs text-gray-500">HR</p>
                 </div>
               </div>
             </div>
@@ -218,14 +203,14 @@ const CompanyDashboard = () => {
             <div className="bg-white rounded-xl shadow-lg border border-gray-100">
               <div className="p-6">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <FaBuilding className="text-xl text-blue-600" />
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <FaBuilding className="text-xl text-purple-600" />
                   </div>
                   <div>
                     <h2 className="font-semibold text-gray-900">
-                      {JSON.parse(localStorage.getItem('user') || '{}')?.name || 'Company'}
+                      {JSON.parse(localStorage.getItem('user') || '{}')?.name || 'HR'}
                     </h2>
-                    <p className="text-sm text-gray-600">Company Portal</p>
+                    <p className="text-sm text-gray-600">HR Portal</p>
                   </div>
                 </div>
 
@@ -236,7 +221,7 @@ const CompanyDashboard = () => {
                       onClick={() => setActiveTab(item.id)}
                       className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                         activeTab === item.id
-                          ? "bg-blue-50 text-blue-700 border border-blue-200"
+                          ? "bg-purple-50 text-purple-700 border border-purple-200"
                           : "text-gray-600 hover:bg-gray-50"
                       }`}
                     >
@@ -298,4 +283,4 @@ const CompanyDashboard = () => {
   );
 };
 
-export default CompanyDashboard;
+export default HRDashboard;

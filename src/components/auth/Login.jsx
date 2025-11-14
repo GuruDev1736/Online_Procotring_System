@@ -5,6 +5,7 @@ import { MdSecurity } from "react-icons/md";
 import ThreeBackground from "../common/ThreeBackground";
 import ErrorDialog from "../common/ErrorDialog";
 import { getCurrentUser, login } from "../service/authService";
+import { ROLE_DASHBOARD_MAP } from "../../constants";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -65,7 +66,19 @@ const Login = () => {
       try {
         const result = await login(email, password);
         if (result.STS === "200") {
-          navigate("/home");
+          // Get user role from the response
+          const userRole = result.CONTENT?.userRole || result.CONTENT?.role;
+          
+          // Redirect based on role
+          const dashboardRoute = ROLE_DASHBOARD_MAP[userRole];
+          
+          if (dashboardRoute) {
+            navigate(dashboardRoute);
+          } else {
+            // Default fallback if role not found
+            console.warn('Unknown role:', userRole);
+            navigate("/home");
+          }
         } else {
           setErrorDialog({
             isOpen: true,
